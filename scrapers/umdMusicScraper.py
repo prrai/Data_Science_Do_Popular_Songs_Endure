@@ -7,7 +7,7 @@ import os
 import pandas as pd
 
 home_site = r'http://www.umdmusic.com/'
-home_page = r'default.asp?Lang=English&Chart=D&ChDay=1&ChMonth=1&ChYear=1959&ChBand=&ChSong='
+home_page = r'default.asp?Lang=English&Chart=D&ChDate=20111203&ChMode=N'
 last_week = r'October_28_2017'
 data_path = r'../data/umd/'
 
@@ -18,6 +18,13 @@ def get_week(soup):
                          string.strip('\r\n').split()).replace(',', '')
     return week
 
+
+def represents_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
 
 def get_data_for_page(soup):
     data_frame = pd.DataFrame(columns=['Title', 'Artist', 'Entry_Date', 'Entry_Position', 'Peak_Position',
@@ -33,6 +40,9 @@ def get_data_for_page(soup):
         artist = title_artist_str.split('<br/>')[1].split('</td>')[0].strip()
         stats = item.find_all('td', {'style': 'font-size:10pt;font-family:Arial'})
         entry_date = stats[4].string.strip()
+        if not represents_int(stats[5].string) or not represents_int(stats[6].string) or not \
+                represents_int(stats[7].string):
+            continue
         entry_position = int(stats[5].string)
         peak_position = int(stats[6].string)
         total_weeks = int(stats[7].string)
