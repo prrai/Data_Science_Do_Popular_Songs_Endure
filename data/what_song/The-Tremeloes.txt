@@ -1,1 +1,0 @@
-Silence Is Golden
