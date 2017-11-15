@@ -23,14 +23,20 @@ def normalized_data():
     del base_df['Title']
     del base_df['Artist']
     for column in base_df:
+        if column == 'Youtube viewcount':
+            base_df[column] /= 2
         base_df[column].fillna((base_df[column].median()), inplace=True)
-        base_df[column] = (base_df[column] - base_df[column].mean()) / base_df[column].std()
+        if column == 'Youtube viewcount' or column == 'Popularity':
+            base_df[column] = (base_df[column] - base_df[column].min()) / (
+                base_df[column].max() - base_df[column].min())
+        else:
+            base_df[column] = (base_df[column] - base_df[column].mean()) / base_df[column].std()
     base_df['Endurance_Score'] = ""
     for i, rows in base_df.iterrows():
-        base_df.loc[i, 'Endurance_Score'] = rows['Popularity'] +  rows['Youtube viewcount']
+        base_df.loc[i, 'Endurance_Score'] = rows['Popularity'] + rows['Youtube viewcount']
     base_df.to_csv('{0}/{1}.csv'.format(path_final_csv, 'normalized_midtermdata'), index=False)
 
 if __name__ == '__main__':
-    # run()
-    # update_date()
+    run()
+    update_date()
     normalized_data()
