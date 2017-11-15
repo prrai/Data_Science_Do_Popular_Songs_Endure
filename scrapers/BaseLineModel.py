@@ -30,7 +30,7 @@ def run_specific_combination(test_frame, reg_type, column_list):
     elif reg_type == 'lin':
         regr = linear_model.LinearRegression()
     elif reg_type == 'ridge':
-        regr = linear_model.Ridge(alpha=100.0)
+        regr = linear_model.Ridge(alpha=1500.0)
     elif reg_type == 'lasso':
         regr = linear_model.Lasso(alpha=10.0)
     elif reg_type == 'bayridge':
@@ -84,7 +84,7 @@ def run():
     column_list.remove('Youtube viewcount')
     column_list.remove('Popularity')
     column_list.remove('Endurance_Score')
-    model = 'gbr'
+    model = 'ridge'
     print("Evaluating for the model: {}".format(model))
     run_specific_combination(test_frame, model, column_list)
 
