@@ -20,9 +20,9 @@ def update_date():
 
 def normalized_data():
     base_df = pd.read_csv('{0}/{1}.csv'.format(path_final_csv, 'updated_date_midtermdata'), encoding='latin-1')
-    del base_df['Title']
-    del base_df['Artist']
     for column in base_df:
+        if column == 'Title' or column == 'Artist':
+            continue
         if column == 'Youtube viewcount':
             base_df[column] /= 2
         base_df[column].fillna((base_df[column].median()), inplace=True)

@@ -24,7 +24,7 @@ def run_specific_combination(test_frame, reg_type, column_list):
     test_df = test_frame.filter(column_list, axis=1)
     X_train, X_test, y_train, y_test = train_test_split(
                 test_df, target_feature.values.reshape(-1,1),
-                test_size=0.80, random_state=0)
+                test_size=0.20, random_state=0)
     if reg_type == 'dt':
         regr = DecisionTreeRegressor(max_depth=2)
     elif reg_type == 'lin':
@@ -58,13 +58,20 @@ def run_specific_combination(test_frame, reg_type, column_list):
             regr = ExtraTreesRegressor()
     else:
         return
-    regr.fit(X_train, y_train.ravel())
-    y_pred = regr.predict(X_test)
+    x_train_frame = X_train.copy()
+    del x_train_frame['Title']
+    del x_train_frame['Artist']
+    regr.fit(x_train_frame, y_train.ravel())
+    x_test_frame = X_test.copy()
+    del x_test_frame['Title']
+    del x_test_frame['Artist']
+    y_pred = regr.predict(x_test_frame)
     rmse = mean_squared_error(y_test, y_pred)
     score = r2_score(y_test, y_pred)
-    print(column_list)
     print("R2-score: {}, RMSE: {}".format(score, math.sqrt(rmse)))
-    result_df = pd.DataFrame(columns=['Endurance_Score', 'Predicted_Endurance_Score'])
+    result_df = pd.DataFrame(columns=['Song', 'Artist', 'Endurance_Score', 'Predicted_Endurance_Score'])
+    result_df['Song'] = X_test['Title']
+    result_df['Artist'] = X_test['Artist']
     result_df['Endurance_Score'] = y_test.ravel()
     result_df['Predicted_Endurance_Score'] = y_pred
     result_df.to_csv('{0}/{1}.csv'.format(path_final_csv, 'predicted_midtermdata'), index=False)
@@ -77,7 +84,7 @@ def run():
     column_list.remove('Youtube viewcount')
     column_list.remove('Popularity')
     column_list.remove('Endurance_Score')
-    model = 'ridge'
+    model = 'gbr'
     print("Evaluating for the model: {}".format(model))
     run_specific_combination(test_frame, model, column_list)
 
